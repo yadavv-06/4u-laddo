@@ -1,888 +1,359 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For you, Laddo</title>
+    <title>Private | For You</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&family=Hind:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --light-pink: #F6C1D1;
-            --blush-pink: #FADADD;
-            --luxury-white: #FAF7F2;
-            --soft-black: #1C1C1E;
-            --maha-blue: #1F3C88;
-            --rose-gold: #C9A14A;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--luxury-white);
-            color: var(--soft-black);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #FAF7F2 0%, #FADADD 50%, #FAF7F2 100%);
+            color: #1C1C1E;
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+        .playfair { font-family: 'Playfair Display', serif; }
+        .hind { font-family: 'Hind', sans-serif; }
+        .cormorant { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+
+        .gradient-light-pink {
+            background: linear-gradient(135deg, #F6C1D1 0%, #FADADD 50%, #FAF7F2 100%);
+        }
+        .text-gold { color: #C9A14A; }
+        .border-gold { border-color: #C9A14A; }
+
+        .lock-screen {
+            background: radial-gradient(circle at 50% 50%, #1C1C1E 0%, #000 100%);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(246, 193, 209, 0.6);
         }
 
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
+        .flower-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
-        .quote-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-        }
-
-        .hindi-text {
-            font-family: 'Noto Sans Devanagari', sans-serif;
-        }
-
-        #lock-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: #0a0a0a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        #lock-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .lock-container {
-            text-align: center;
-            max-width: 320px;
-            padding: 2rem;
-            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.4));
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .glow-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--light-pink);
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 12px var(--light-pink);
-            animation: gentle-pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes gentle-pulse {
-            0%, 100% { opacity: 0.4; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.4); }
-        }
-
-        #passcode-input {
-            background-color: transparent;
-            border: none;
-            border-bottom: 1.5px solid rgba(255,255,255,0.3);
-            color: white;
-            font-size: 1.25rem;
-            text-align: center;
-            width: 140px;
-            letter-spacing: 0.5em;
-            padding-bottom: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s ease;
-        }
-
-        #passcode-input:focus {
-            outline: none;
-            border-color: var(--light-pink);
-        }
-
-        #passcode-input::placeholder {
-            color: rgba(255,255,255,0.2);
-            letter-spacing: normal;
-        }
-
-        .error-message {
-            color: #ff9999;
-            font-size: 0.8rem;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .petals-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
-            opacity: 0.15;
-        }
-
-        .petal {
-            position: absolute;
-            width: 18px;
-            height: 22px;
-            background: var(--light-pink);
-            border-radius: 50% 0 50% 50%;
-            opacity: 0.45;
-            box-shadow: 0 4px 14px rgba(246, 193, 209, 0.25);
-            transform-origin: center;
-        }
-
-        @keyframes float-petal {
-            0% {
-                transform: translateY(120vh) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-40vh) rotate(280deg);
-            }
-        }
-
-        .section-fade {
-            opacity: 0;
-            transform: translateY(28px);
-            transition: opacity 0.9s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        .section-fade.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .flower-burst {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 1px;
-            height: 1px;
-            pointer-events: none;
-        }
-
-        .burst-petal {
-            position: absolute;
-            width: 11px;
-            height: 11px;
-            background: var(--blush-pink);
-            border-radius: 2px 8px 3px 9px;
-            animation: burst-expand 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .fade-in {
+            animation: fadeIn 1.5s ease-out forwards;
             opacity: 0;
         }
-
-        @keyframes burst-expand {
-            0% {
-                transform: scale(0.05) rotate(0deg);
-                opacity: 0.85;
-            }
-            35% {
-                opacity: 0.95;
-            }
-            100% {
-                transform: scale(4.5) rotate(42deg);
-                opacity: 0;
-            }
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
-        .map-container {
-            position: relative;
-            max-width: 420px;
-            margin: 0 auto;
-            aspect-ratio: 2.35 / 1;
-            background: rgba(250, 247, 242, 0.75);
-            border-radius: 18px;
-            border: 1px solid rgba(246, 193, 209, 0.16);
-            overflow: hidden;
-            box-shadow: 0 10px 34px -14px rgba(28, 28, 30, 0.05);
+        .number-count {
+            background: linear-gradient(135deg, #F6C1D1, #C9A14A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .connecting-line {
-            stroke: var(--light-pink);
-            stroke-width: 2.4;
-            stroke-linecap: round;
-            stroke-dasharray: 14 7;
-            animation: dash-flow 4.8s linear infinite;
+        .distance-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease-out forwards;
+        }
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
         }
 
-        @keyframes dash-flow {
-            to {
-                stroke-dashoffset: -42;
-            }
+        .section-padding {
+            padding: 6rem 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .section-padding { padding: 4rem 1rem; }
         }
 
-        .map-label {
-            position: absolute;
-            font-size: 0.78rem;
-            letter-spacing: 0.025em;
-            font-weight: 400;
-            color: rgba(28,28,30,0.75);
-        }
-
-        .map-label strong {
-            color: var(--soft-black);
-            font-weight: 500;
-        }
-
-        .maha-section {
-            background: linear-gradient(172deg, #f3eff2 0%, #f8f5f4 100%);
-            position: relative;
-        }
-
-        .maha-section::before {
-            content: '';
-            position: absolute;
-            left: 12%;
-            top: 14%;
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 38% 41%, rgba(31,60,136,0.045) 0%, transparent 68%);
-            z-index: 0;
-        }
-
-        .lotus-icon {
-            cursor: pointer;
-            transition: transform 0.32s cubic-bezier(0.68, -0.3, 0.32, 1.4);
-            display: inline-block;
-            font-size: 1.32rem;
-            filter: opacity(0.35);
-        }
-
-        .lotus-icon:hover {
-            transform: scale(1.32);
-            filter: opacity(0.85);
-        }
-
-        .hidden-message-box {
-            background-color: rgba(250,250,250,0.5);
-            padding: 2rem 1.85rem;
-            border-radius: 13px;
-            border: 1px dashed rgba(201,161,74,0.22);
-            max-width: 380px;
-            margin: 1.8rem auto 0;
+        .hidden-content {
             display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .hidden-content.show {
+            display: block;
+            opacity: 1;
         }
 
-        .shayari-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-size: 1.08rem;
-            line-height: 1.48;
-            color: rgba(28,28,30,0.82);
+        .easter-egg {
+            cursor: pointer;
+            transition: transform 0.3s;
         }
-
-        .next-chapter-btn {
-            position: relative;
-            overflow: hidden;
-            background: transparent;
-            border: 1px solid rgba(246,193,209,0.65);
-            color: rgba(28,28,30,0.8);
-            font-size: 0.89rem;
-            letter-spacing: 0.06em;
-            padding: 0.72rem 2.1rem;
-            border-radius: 42px;
-            transition: color 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .next-chapter-btn:hover {
-            color: white;
-            box-shadow: 0 0 0 42px var(--light-pink) inset;
-        }
-
-        .next-chapter-btn::after {
-            content: '🔒';
-            position: absolute;
-            right: 1.35rem;
-            font-size: 0.82rem;
-            opacity: 0.4;
-        }
-
-        .final-note {
-            font-size: 0.815rem;
-            color: rgba(28,28,30,0.35);
-            letter-spacing: 0.012em;
-            font-weight: 300;
-        }
-
-        @media (max-width: 640px) {
-            .lock-container {
-                max-width: 86%;
-                padding: 1.65rem;
-            }
-            
-            .map-label {
-                font-size: 0.715rem;
-            }
-            
-            h2 {
-                font-size: 1.78rem;
-            }
-            
-            .shayari-text {
-                font-size: 1rem;
-            }
+        .easter-egg:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
-<body class="antialiased">
-    <div id="lock-screen">
-        <div class="lock-container">
-            <div class="flex items-center justify-center gap-1.5 mb-6">
-                <div class="glow-dot"></div>
-                <div class="glow-dot" style="animation-delay: 0.45s;"></div>
-                <div class="glow-dot" style="animation-delay: 0.9s;"></div>
+<body class="relative">
+    <!-- Entry Lock Screen -->
+    <div id="lockScreen" class="lock-screen fixed inset-0 z-50 flex flex-col items-center justify-center min-h-screen transition-opacity duration-1000">
+        <div class="text-center px-6 max-w-lg">
+            <h1 class="playfair text-4xl md:text-5xl text-[#FAF7F2] mb-6 glow-text">Private Page.</h1>
+            <p class="text-xl text-[#FADADD] mb-10">Made for one person only.</p>
+            <div class="mb-8">
+                <input type="text" id="passcodeInput" class="bg-transparent border border-[#C9A14A] rounded-full py-3 px-6 text-[#FAF7F2] text-center text-lg w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-[#C9A14A]" placeholder="Enter passcode" />
+                <p id="wrongMsg" class="text-[#F6C1D1] mt-4 text-lg hidden">Nice try 😄 But not for everyone.</p>
             </div>
-            
-            <div class="mb-7">
-                <p class="text-white text-[0.835rem] font-light tracking-widest uppercase mb-0.5">PRIVATE</p>
-                <p class="text-[0.925rem] text-white/85 leading-snug font-light">This page is not public.<br>It’s made for one person only.</p>
-            </div>
-            
-            <input type="password" id="passcode-input" placeholder="••••" maxlength="6">
-            
-            <div id="error-msg" class="error-message mt-3">Not for everyone 🙂</div>
-            
-            <div class="mt-8 pt-4 border-t border-white/5">
-                <p class="text-[0.675rem] text-white/35 tracking-wider font-mono">ONLY YOU KNOW</p>
-            </div>
+            <p class="text-[#FADADD] text-sm mt-10">Hint: "Jo naam sirf main use karta hoon."</p>
         </div>
     </div>
 
-    <div class="petals-container" id="global-petals"></div>
-
-    <div class="min-h-screen py-20 px-5 sm:px-7 md:px-14 max-w-[980px] mx-auto">
-        <div class="max-w-md mx-auto">
-            <div class="text-center mb-[5.6rem]">
-                <div class="inline-flex items-center mb-4">
-                    <span class="inline-block w-[3px] h-[3px] bg-[var(--rose-gold)] rounded-full mr-[5px]"></span>
-                    <span class="text-[var(--rose-gold)] uppercase font-mono text-[0.59rem] tracking-[0.18em]">FOR YOU</span>
-                </div>
-                
-                <h1 class="text-[2.68rem] leading-[1.02] tracking-[-0.015em] mb-6 section-fade" style="transition-delay: 0.15s;">
-                    Hi Laddo <span class="inline-block origin-bottom-right animate-[gentle-nod_2.2s_cubic-bezier(0.45,0.05,0.55,0.95)_infinite] text-xl">🙂</span>
-                </h1>
-                
-                <div class="quote-text text-[0.925rem] leading-relaxed text-[rgba(28,28,30,0.68)] mb-10 section-fade" style="transition-delay: 0.3s;">
-                    This is not a big announcement.<br>
-                    It’s just something…<span class="text-[var(--light-pink)] font-medium">made specially for you.</span>
-                </div>
-                
-                <div class="h-px w-8 bg-gradient-to-r from-transparent via-[var(--blush-pink)] to-transparent mx-auto section-fade" style="transition-delay: 0.52s;"></div>
+    <!-- Main Content (Hidden Initially) -->
+    <div id="mainContent" class="hidden-content">
+        <!-- Hero Intro -->
+        <section class="section-padding text-center fade-in">
+            <h1 class="playfair text-5xl md:text-7xl mb-8"><span class="text-gold">Hi</span> Laddo 👋</h1>
+            <p class="cormorant text-2xl md:text-3xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                Call nahi.<br/>Message nahi.<br/>Socha kuch different try karte hain.
+            </p>
+            <div class="mt-20">
+                <audio id="bgMusic" loop class="hidden">
+                    <source src="https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3" type="audio/mpeg">
+                </audio>
+                <button onclick="document.getElementById('bgMusic').play()" class="border border-gold text-gold rounded-full px-8 py-3 hover:bg-gold hover:text-white transition duration-300">
+                    ♫ Play Calm Music
+                </button>
             </div>
-        </div>
+        </section>
 
-        <div class="space-y-[7.2rem] md:space-y-[9.8rem]">
-            <div class="cities-section section-fade">
-                <div class="text-center mb-11">
-                    <h2 class="text-[1.48rem] mb-1.5 tracking-very-tight font-medium">Azamgarh <span class="text-[0.64rem] align-super text-[var(--rose-gold)] font-light tracking-normal">UP</span> <span class="text-[var(--light-pink)] mx-2.5">✨</span> Jhajjar <span class="text-[0.64rem] align-super text-[var(--rose-gold)] font-light tracking-normal">HR</span></h2>
-                    <p class="hindi-text text-[0.825rem] text-[rgba(28,28,30,0.52)] tracking-wider font-light">पूर्वांचल से हरियाणा तक</p>
-                </div>
-                
-                <div class="map-container">
-                    <svg viewBox="0 0 420 178" class="w-full h-full absolute inset-0">
-                        <path class="connecting-line" fill="none" d="M 84 92 Q 148 114 196 82 Q 254 52 324 107" />
-                    </svg>
-                    
-                    <div class="map-label top-[22%] left-[14%]" style="transform: translateX(-50%);">
-                        <strong>Azamgarh</strong><br><span class="font-mono text-[0.58rem]">Eastern UP</span>
-                    </div>
-                    
-                    <div class="map-label top-[42%] left-[82%]" style="transform: translateX(28%);">
-                        <strong>Jhajjar</strong><br><span class="font-mono text-[0.58rem]">Haryana</span>
-                    </div>
-                    
-                    <div class="absolute top-[52%] left-[50%] w-px h-px bg-[var(--rose-gold)] rounded-full shadow-[0_0_1px_1.5px_rgb(201,161,74,0.4)]"></div>
-                    
-                    <div class="absolute bottom-4 right-5 text-right">
-                        <p class="text-[0.715rem] leading-none font-medium">काफी दूर हैं।</p>
-                        <p class="hindi-text text-[0.695rem] text-[rgba(28,28,30,0.58)] mt-px font-light tracking-widest">पर दोस्ती के लिए<br>distance criteria नहीं होता।</p>
-                    </div>
-                </div>
+        <!-- Section 1: One Year -->
+        <section class="section-padding gradient-light-pink text-center">
+            <div class="text-9xl md:text-[180px] font-bold mb-10 number-count" id="counter">0</div>
+            <p class="playfair text-4xl md:text-5xl mb-6">One year complete.</p>
+            <p class="text-2xl text-gray-700 max-w-2xl mx-auto">
+                No big plan.<br/>No announcement.<br/>Bas ek solid friendship.
+            </p>
+        </section>
+
+        <!-- Section 2: How It Works -->
+        <section class="section-padding text-center max-w-4xl mx-auto fade-in">
+            <p class="hind text-3xl md:text-4xl text-gray-800 leading-snug">
+                “Hum roz baat karte hain.<br/>Kabhi short chats,<br/>kabhi thoda lamba.<br/>Aur haan —<br/><span class="text-gold font-bold">12 baje ke baad nahi</span> 😄”
+            </p>
+        </section>
+
+        <!-- Section 3: Distance -->
+        <section class="section-padding text-center">
+            <div class="max-w-4xl mx-auto">
+                <svg viewBox="0 0 800 200" class="w-full h-auto">
+                    <text x="50" y="50" class="hind text-2xl fill-gray-700">Azamgarh</text>
+                    <text x="650" y="50" class="hind text-2xl fill-gray-700">Jhajjar</text>
+                    <line x1="150" y1="50" x2="650" y2="50" stroke="#C9A14A" stroke-width="3" stroke-dasharray="5,5" />
+                    <line class="distance-line" x1="150" y1="50" x2="650" y2="50" stroke="#F6C1D1" stroke-width="4" />
+                    <circle cx="150" cy="50" r="8" fill="#F6C1D1" />
+                    <circle cx="650" cy="50" r="8" fill="#F6C1D1" />
+                </svg>
+                <p class="playfair text-3xl md:text-4xl mt-12">
+                    Distance hai.<br/>Par awkwardness kabhi nahi.
+                </p>
             </div>
+        </section>
 
-            <div class="year-section section-fade relative">
-                <div class="absolute -top-5 -right-1 w-14 h-px bg-gradient-to-l from-[var(--light-pink)] to-transparent"></div>
-                
-                <div id="year-counter-container" class="relative h-[86px] flex items-center justify-center mb-4">
-                    <div id="year-counter" class="text-[6.85rem] font-light tabular-nums tracking-tighter text-[rgba(28,28,30,0.08)] select-none pointer-events-none">000</div>
-                    <div class="absolute text-[1.92rem] font-medium text-[var(--soft-black)] tabular-nums">365</div>
-                </div>
-                
-                <div class="text-center">
-                    <p class="text-[0.815rem] uppercase tracking-[0.125em] font-mono text-[rgba(201,161,74,0.72)] mb-px">ONE YEAR COMPLETE</p>
-                    
-                    <div class="quote-text text-[1.02rem] leading-[1.38] max-w-[280px] mx-auto">
-                        न कोई plan था,<br>न कोई expectation।<br>
-                        <span class="text-[0.86rem] align-middle mt-1 inline-block">बस बात-चीत में <span class="font-serif not-italic text-[var(--rose-gold)]">दोस्ती</span> बन गई।</span>
-                    </div>
-                </div>
-                
-                <div class="absolute -bottom-6 -left-6 rotate-[-12deg]">
-                    <span class="text-[var(--light-pink)] text-[1.9rem] font-serif">✦</span>
+        <!-- Section 4: Nickname -->
+        <section class="section-padding text-center relative overflow-hidden">
+            <div class="absolute inset-0 gradient-light-pink opacity-70"></div>
+            <div class="relative z-10">
+                <p class="cormorant text-3xl md:text-4xl text-gray-800 mb-10">
+                    By the way…<br/>‘Laddo’ randomly nahi nikla.
+                </p>
+                <p class="playfair text-4xl md:text-5xl text-gold">
+                    Kuch naam<br/>bas fit ho jaate hain.
+                </p>
+                <div class="mt-12">
+                    <button onclick="triggerConfetti()" class="bg-white text-gray-800 rounded-full px-8 py-3 shadow-lg hover:shadow-xl transition duration-300">
+                        ✨ Celebrate This
+                    </button>
                 </div>
             </div>
+        </section>
 
-            <div class="flowers-section section-fade relative overflow-hidden py-4">
-                <div class="flex justify-center gap-5 mb-3.5">
-                    <div class="w-px h-7 bg-[var(--blush-pink)]"></div>
-                    <span class="text-[1.92rem]">🌸</span>
-                    <div class="w-px h-7 bg-[var(--blush-pink)]"></div>
-                </div>
-                
-                <h3 class="text-center text-[1.14rem] mb-6 font-medium tracking-tighter">तुम्हें flowers पसंद हैं</h3>
-                
-                <div class="quote-text text-center text-[0.925rem] max-w-xs mx-auto leading-[1.45] text-[rgba(28,28,30,0.73)]">
-                    इसीलिए ये page भी थोड़ा soft रखा है।<br>
-                    <span class="text-xs align-middle text-[rgba(28,28,30,0.45)] mt-px block font-sans not-italic">Petals, pastel, और थोड़ा सा magic।</span>
-                </div>
-                
-                <div class="absolute left-[8%] top-[12%] text-[rgba(246,193,209,0.32)] text-4xl animate-[gentle-rotate_18s_linear_infinite]">❀</div>
-                <div class="absolute right-[11%] bottom-[18%] text-[rgba(246,193,209,0.27)] text-[2.65rem] animate-[gentle-rotate_22s_linear_infinite_reverse]">✿</div>
-                
-                <div id="laddo-burst-trigger" class="flower-burst pointer-events-none"></div>
+        <!-- Section 5: Flower Aesthetic -->
+        <section class="section-padding text-center">
+            <div class="flex flex-wrap justify-center gap-12 mb-16">
+                <img src="https://cdn-icons-png.flaticon.com/512/4158/4158476.png" alt="Flower" class="w-24 h-24 flower-float" style="animation-delay: 0s;">
+                <img src="https://cdn-icons-png.flaticon.com/512/4158/4158479.png" alt="Flower" class="w-24 h-24 flower-float" style="animation-delay: 1s;">
+                <img src="https://cdn-icons-png.flaticon.com/512/4158/4158478.png" alt="Flower" class="w-24 h-24 flower-float" style="animation-delay: 2s;">
             </div>
+            <p class="hind text-3xl max-w-2xl mx-auto text-gray-700">
+                Tumhe flowers pasand hain.<br/>Isliye design bhi thoda soft rakha hai.
+            </p>
+        </section>
 
-            <div id="laddo-section" class="laddo-section py-8 section-fade">
-                <div class="relative bg-[var(--blush-pink)] bg-opacity-[0.08] rounded-2xl px-5 py-[3.85rem] text-center shadow-inner">
-                    <div class="absolute top-[-1px] left-1/2 transform -translate-x-1/2 w-[1px] h-6 bg-gradient-to-b from-transparent via-[var(--light-pink)]"></div>
-                    
-                    <div class="mb-3">
-                        <span class="uppercase text-[0.595rem] tracking-[0.32em] text-[rgba(201,161,74,0.64)] font-mono">nickname decoded</span>
-                    </div>
-                    
-                    <div class="relative">
-                        <h2 class="text-[2.45rem] font-medium tracking-[-0.0125em] bg-gradient-to-r from-[var(--light-pink)] via-[rgba(246,193,209,0.82)] to-[var(--light-pink)] bg-clip-text text-transparent inline-block">LADDO</h2>
-                        
-                        <div class="absolute -top-[9px] -right-[13px] rotate-[-9deg] text-[var(--rose-gold)]/40 text-[0.65rem] font-serif">✹</div>
-                    </div>
-                    
-                    <p class="text-[0.875rem] leading-snug mt-1 text-[rgba(28,28,30,0.72)] font-light">
-                        सिर्फ nickname नहीं है।<br>
-                        It’s a mood<span class="text-xs align-top text-[rgba(201,161,74,0.45)] ml-px">.</span>
-                    </p>
-                    
-                    <div class="mt-7 text-[0.695rem] text-[rgba(28,28,30,0.44)] max-w-[214px] mx-auto">
-                        Cute like gulkand. Soft like malai. And always makes the day better without trying.
-                    </div>
-                </div>
-            </div>
+        <!-- Section 6: Unsaid -->
+        <section class="section-padding text-center fade-in">
+            <p class="playfair text-4xl md:text-5xl text-gray-800 max-w-3xl mx-auto">
+                Hum best friends hain,<br/>par dramatic nahi.
+            </p>
+            <p class="text-2xl text-gray-600 mt-8">
+                Simple, consistent, aur real.
+            </p>
+        </section>
 
-            <div class="maha-section py-16 px-6 rounded-[1.65rem] section-fade">
-                <div class="absolute top-5 right-[18%] text-[1.15rem] text-[var(--maha-blue)]/20">🕉</div>
-                
-                <div class="flex justify-center mb-6">
-                    <div class="inline-flex px-[9px] py-[3px] rounded bg-[rgba(31,60,136,0.035)] text-[var(--maha-blue)]/55 text-[0.615rem] font-mono tracking-[0.135em] items-center">
-                        MAHADEV
-                    </div>
+        <!-- Section 7: Daily Connect -->
+        <section class="section-padding gradient-light-pink text-center rounded-3xl mx-4 md:mx-16">
+            <p class="text-3xl md:text-4xl text-gray-800 leading-relaxed">
+                Kabhi good morning,<br/>kabhi random baat.<br/>Lagbhag har din.<br/>Bas naturally.
+            </p>
+            <!-- Easter Egg 1 -->
+            <div class="mt-16">
+                <div onclick="showEasterEgg()" class="easter-egg inline-block">
+                    <img src="https://cdn-icons-png.flaticon.com/512/590/590685.png" alt="Small Flower" class="w-12 h-12 mx-auto">
+                    <p class="text-sm text-gray-600 mt-2">Click me</p>
                 </div>
-                
-                <div class="text-center">
-                    <h3 class="text-[1.08rem] font-medium mb-px tracking-tighter text-[var(--maha-blue)]">Mahadev का नाम</h3>
-                    
-                    <div class="hindi-text text-[0.925rem] leading-[1.46] text-[rgba(28,28,30,0.78)] mt-2 max-w-[265px] mx-auto">
-                        हम दोनों के लिए comfort जैसा है।<br>
-                        ज़्यादा बोलना नहीं पड़ता<span class="text-[0.68rem] align-top text-[rgba(31,60,136,0.35)]">.</span>
-                    </div>
-                </div>
-                
-                <div class="mt-9 flex justify-center">
-                    <div class="h-[1px] w-16 bg-gradient-to-r from-transparent via-[var(--maha-blue)]/45 to-transparent"></div>
-                </div>
-                
-                <div class="mt-4">
-                    <span class="lotus-icon" id="lotus-easter">🌺</span>
-                </div>
-                
-                <div id="easter-tooltip" class="hidden text-center text-[0.695rem] text-[rgba(28,28,30,0.46)] mt-2.5 tracking-wide transition-all">
-                    तुम यहाँ तक आ गई?<br>मतलब page ध्यान से देख रही हो <span class="inline-block">😄</span>
-                </div>
+                <p id="easterEggText" class="hidden text-gold text-xl mt-4">Details notice karna tumhari habit hai 😌</p>
             </div>
+        </section>
 
-            <div class="unsaid-section section-fade">
-                <div class="bg-white/60 backdrop-blur-[0.5px] py-7 px-6 rounded-xl">
-                    <div class="flex justify-end mb-px">
-                        <span class="uppercase text-[rgba(246,193,209,0.55)] text-[0.51rem] tracking-widest font-medium">UNSAID</span>
-                    </div>
-                    
-                    <div class="text-[0.915rem] leading-[1.39] text-[rgba(28,28,30,0.79)]">
-                        हम perfect best friends नहीं हैं।<br>
-                        कभी replies late, कभी बात कम।<br>
-                        <span class="block mt-[0.65em] text-[0.895rem]">फिर भी connection same रहता है।</span>
-                    </div>
-                    
-                    <div class="mt-6 pl-[1px]">
-                        <span class="text-[0.685rem] text-[rgba(201,161,74,0.42)] font-serif">It stays. Quietly.</span>
-                    </div>
-                </div>
-            </div>
+        <!-- Section 8: Blessed -->
+        <section class="section-padding text-center max-w-3xl mx-auto">
+            <p class="hind text-3xl md:text-4xl text-gray-700 leading-relaxed">
+                Hum dono maan-te hain<br/>ki kuch connections<br/><span class="text-gold">blessed</span> hote hain.<br/>Bas wahi.
+            </p>
+        </section>
 
-            <div class="shayari-section section-fade">
-                <div class="flex items-baseline gap-px mb-4">
-                    <span class="font-serif text-[var(--rose-gold)] text-xl align-top">❝</span>
-                    <span class="uppercase font-mono text-[0.495rem] text-[rgba(201,161,74,0.65)] tracking-widest pl-[3px] pb-px">HINDI SHAYARI</span>
-                </div>
-                
-                <div class="shayari-text max-w-[295px]">
-                    ज़्यादा लिखने की ज़रूरत नहीं थी,<br>
-                    ज़्यादा दिखाने की भी नहीं।<br>
-                    बस एक साल का <span class="text-[rgba(28,28,30,0.84)] font-sans not-italic">thank-you</span><br>
-                    काफ़ी था।
-                </div>
-                
-                <div class="flex justify-end mt-5">
-                    <span class="text-[rgba(201,161,74,0.2)] text-2xl font-serif">❞</span>
-                </div>
-            </div>
+        <!-- Hindi Section -->
+        <section class="section-padding text-center bg-white rounded-3xl mx-4 md:mx-16">
+            <p class="hind text-3xl md:text-4xl text-gray-800 leading-relaxed">
+                Zyada likhne ki zarurat nahi thi.<br/>Ek saal ka surprise kaafi tha.
+            </p>
+        </section>
 
-            <div class="haryanvi-section section-fade bg-[rgba(246,193,209,0.025)] -mx-4 px-4 py-8 rounded-[1.85rem]">
-                <div class="max-w-[260px] mx-auto">
-                    <div class="font-mono uppercase text-[0.475rem] tracking-[0.34em] text-[rgba(28,28,30,0.22)] mb-px text-right">FROM THE HEARTLAND</div>
-                    
-                    <div class="hindi-text text-[0.96rem] leading-snug">
-                        तू simple से,<br>
-                        पर special से।<br>
-                        <span class="block mt-2 text-[0.91rem]">और यो बात बिना बोले समझ आ जा से।</span>
-                    </div>
-                    
-                    <div class="mt-3.5 flex justify-end">
-                        <div class="text-right text-[0.635rem] text-[rgba(28,28,30,0.48)]">
-                            <span class="block font-medium">— Haryana wali feeling</span>
-                            <span class="block font-mono text-[0.495rem]">for my Purvanchali dost</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Hidden Message (Unlocked by Passcode) -->
+        <section id="hiddenMessage" class="section-padding text-center bg-gradient-to-r from-[#FADADD] to-[#FAF7F2] hidden">
+            <p class="playfair text-4xl md:text-5xl text-gray-800 mb-10">
+                Tum special ho —
+            </p>
+            <p class="cormorant text-3xl text-gray-700 max-w-2xl mx-auto">
+                isliye nahi kyunki tum perfect ho,<br/>balki kyunki tum genuine ho.
+            </p>
+        </section>
 
-            <div class="hidden-msg-section pt-4 pb-10 section-fade">
-                <div class="max-w-[380px] mx-auto">
-                    <div class="rounded-xl bg-white/45 p-[1px]">
-                        <div class="bg-[var(--luxury-white)] rounded-xl px-7 py-8">
-                            <div class="font-mono uppercase text-[0.51rem] tracking-[0.145em] pb-px text-[rgba(31,60,136,0.55)]">FOR CURIOUS EYES ONLY</div>
-                            
-                            <div class="mt-4 text-[0.795rem] leading-snug">
-                                Hint: Jo naam main casually bulata hoon…
-                            </div>
-                            
-                            <div class="mt-4 flex items-center bg-[rgba(246,193,209,0.035)] rounded-full px-[5px] py-[5px]">
-                                <input type="text" id="secret-input" class="flex-1 bg-transparent px-4 py-px text-[0.925rem] placeholder:text-[rgba(28,28,30,0.24)] focus:outline-none" placeholder="6 letters..." autocomplete="off">
-                                <button id="secret-unlock-btn" class="bg-[var(--light-pink)] text-white rounded-full px-[13px] py-[5px] text-xs font-medium active:scale-95 transition-all">Reveal</button>
-                            </div>
-                            
-                            <div id="hidden-message" class="hidden-message-box">
-                                <div class="text-[0.815rem] leading-relaxed text-[rgba(28,28,30,0.77)]">
-                                    तुम important हो —<br>
-                                    बस इसलिए नहीं<br>
-                                    क्योंकि तुम हो,<br>
-                                    <span class="block mt-1 text-[rgba(28,28,30,0.59)] text-sm">बल्कि इसलिए क्योंकि तुम <span class="font-medium text-[rgba(28,28,30,0.86)]">real</span> हो।</span>
-                                </div>
-                                
-                                <div class="border-t border-dotted border-[rgba(201,161,74,0.12)] pt-4 mt-4">
-                                    <span class="block text-right text-[0.635rem] text-[rgba(201,161,74,0.42)] font-serif">Secret kept. Quietly celebrated.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-[0.595rem] font-mono text-center mt-5 text-[rgba(28,28,30,0.24)]">Only if you know.</div>
-                </div>
-            </div>
+        <!-- Section 9: Effort Flex -->
+        <section class="section-padding text-center">
+            <p class="playfair text-4xl md:text-6xl text-gray-800 mb-10">
+                Haan, website thodi badi hai.
+            </p>
+            <p class="text-2xl text-gray-600 max-w-2xl mx-auto">
+                Kyunki effort dikhna chahiye 😄
+            </p>
+        </section>
 
-            <div class="flex justify-center py-3 section-fade">
-                <button id="next-chapter" class="next-chapter-btn">Next chapter</button>
-            </div>
+        <!-- Optional Future Surprise -->
+        <section class="section-padding text-center">
+            <button id="futureBtn" class="bg-gradient-to-r from-[#C9A14A] to-[#F6C1D1] text-white text-2xl font-bold py-6 px-12 rounded-2xl shadow-2xl hover:shadow-3xl transition duration-500">
+                Next chapter — locked 🔒
+            </button>
+            <p id="futureText" class="text-xl text-gray-600 mt-6 hidden">Abhi nahi. Kabhi baad mein.</p>
+        </section>
 
-            <div class="closing-section pt-16 pb-[7.8rem] text-center section-fade">
-                <div class="mb-6">
-                    <div class="inline-block bg-gradient-to-br from-[var(--blush-pink)] to-[rgba(250,247,242,0.85)] rounded-2xl px-[1.15rem] py-[9px]">
-                        <span class="font-serif text-[var(--rose-gold)]/75 text-[1.12rem]">🪷</span>
-                    </div>
-                </div>
-                
-                <div class="max-w-[245px] mx-auto">
-                    <p class="text-[0.875rem] leading-[1.37] text-[rgba(28,28,30,0.72)]">
-                        ये website emotional speech के लिए नहीं है।<br>
-                        बस एक छोटा सा surprise —<br>
-                        <span class="font-medium text-[rgba(28,28,30,0.91)]">One year complete.</span>
-                    </p>
-                </div>
-                
-                <div class="mt-14">
-                    <span class="final-note">Made with care • From Azamgarh with pink thoughts</span>
-                </div>
-                
-                <div class="mt-px text-[0.485rem] text-[rgba(28,28,30,0.09)] font-mono">v.1 quiet-happy</div>
+        <!-- Final Close -->
+        <footer class="section-padding text-center fade-in">
+            <p class="playfair text-5xl md:text-6xl text-gray-800 mb-10">
+                Bas itna hi.
+            </p>
+            <p class="text-3xl text-gray-600">
+                One year complete.<br/>Surprise delivered.
+            </p>
+            <div class="mt-20">
+                <p class="text-gray-500">— ✦ —</p>
             </div>
-        </div>
+        </footer>
     </div>
 
     <script>
-        const correctPasscode = 'laddo';
-        const secretPasscode = 'laddo';
+        // Lock Screen Logic
+        const passcode = "Laddo";
+        const lockScreen = document.getElementById('lockScreen');
+        const mainContent = document.getElementById('mainContent');
+        const passcodeInput = document.getElementById('passcodeInput');
+        const wrongMsg = document.getElementById('wrongMsg');
+        const hiddenMessage = document.getElementById('hiddenMessage');
 
-        const lockScreen = document.getElementById('lock-screen');
-        const passcodeInput = document.getElementById('passcode-input');
-        const errorMsg = document.getElementById('error-msg');
-
-        passcodeInput.focus();
-
-        passcodeInput.addEventListener('keypress', function(e) {
+        passcodeInput.addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
-                const entered = passcodeInput.value.trim().toLowerCase();
-                
-                if (entered === correctPasscode) {
+                if (passcodeInput.value.trim() === passcode) {
                     lockScreen.style.opacity = '0';
                     setTimeout(() => {
-                        lockScreen.classList.add('hidden');
-                        initPageAnimations();
-                    }, 1100);
-                    
-                    passcodeInput.blur();
+                        lockScreen.style.display = 'none';
+                        mainContent.classList.add('show');
+                        // Show hidden message section
+                        hiddenMessage.classList.remove('hidden');
+                        hiddenMessage.classList.add('fade-in');
+                        // Start counter animation
+                        animateCounter();
+                    }, 1000);
                 } else {
-                    errorMsg.style.opacity = '1';
+                    wrongMsg.classList.remove('hidden');
                     passcodeInput.value = '';
-                    
-                    setTimeout(() => {
-                        errorMsg.style.opacity = '0';
-                    }, 2400);
                 }
             }
         });
 
-        function initPageAnimations() {
-            createFloatingPetals();
-            
-            const sections = document.querySelectorAll('.section-fade');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        
-                        if (entry.target.id === 'laddo-section') {
-                            createFlowerBurst();
-                        }
-                    }
-                });
-            }, { threshold: 0.21, rootMargin: '0px 0px -12% 0px' });
-            
-            sections.forEach(section => observer.observe(section));
-            
-            animateYearCounter();
-        }
-
-        function createFloatingPetals() {
-            const container = document.getElementById('global-petals');
-            
-            for (let i = 0; i < 16; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'petal';
-                
-                const sizeMod = (Math.random() * 0.45 + 0.65);
-                const width = 18 * sizeMod;
-                const height = 22 * sizeMod;
-                
-                petal.style.width = `${width}px`;
-                petal.style.height = `${height}px`;
-                
-                petal.style.left = `${Math.random() * 100}%`;
-                petal.style.top = `${Math.random() * 80 + 120}vh`;
-                
-                const duration = Math.random() * 28 + 32;
-                petal.style.animation = `float-petal ${duration}s linear forwards`;
-                
-                const rotateSpeed = Math.random() > 0.5 ? '' : 'reverse';
-                petal.style.animationDirection = rotateSpeed;
-                
-                const delay = Math.random() * -22;
-                petal.style.animationDelay = `${delay}s`;
-                
-                petal.style.opacity = 0.28 + (Math.random() * 0.3);
-                
-                const hueRotate = Math.random() > 0.5 ? 0 : 12;
-                petal.style.filter = `hue-rotate(${hueRotate}deg)`;
-                
-                container.appendChild(petal);
-                
-                setTimeout(() => {
-                    if (petal.parentNode) petal.parentNode.removeChild(petal);
-                }, (duration + Math.abs(delay)) * 1200);
-            }
-            
-            setTimeout(createFloatingPetals, 10500);
-        }
-
-        function animateYearCounter() {
-            const counterEl = document.getElementById('year-counter');
+        // Counter Animation
+        function animateCounter() {
             let count = 0;
-            
+            const target = 365;
+            const counterElement = document.getElementById('counter');
             const interval = setInterval(() => {
-                count += Math.ceil(Math.random() * 8.5 + 2);
-                
-                if (count >= 365) {
-                    count = 365;
+                count += 5;
+                if (count >= target) {
+                    count = target;
                     clearInterval(interval);
-                    
-                    counterEl.classList.add('text-[rgba(28,28,30,0.14)]');
-                    setTimeout(() => {
-                        counterEl.classList.remove('text-[rgba(28,28,30,0.14)]');
-                    }, 800);
                 }
-                
-                counterEl.textContent = count.toString().padStart(3, '0');
-            }, 48);
+                counterElement.textContent = count;
+            }, 20);
         }
 
-        function createFlowerBurst() {
-            const trigger = document.getElementById('laddo-burst-trigger');
-            
-            const petalCount = 9;
-            
-            for (let i = 0; i < petalCount; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'burst-petal';
-                
-                const angle = (360 / petalCount) * i + (Math.random() * 24 - 12);
-                const distance = 42 + Math.random() * 22;
-                
-                petal.style.transform = `rotate(${angle}deg) translate(${distance}px, 0)`;
-                petal.style.animationDelay = `${Math.random() * 0.34}s`;
-                
-                const scaleRandom = 0.75 + Math.random() * 0.65;
-                petal.style.width = `${11 * scaleRandom}px`;
-                petal.style.height = `${11 * scaleRandom}px`;
-                
-                trigger.appendChild(petal);
-                
-                setTimeout(() => {
-                    if (petal.parentNode) petal.parentNode.removeChild(petal);
-                }, 1950);
-            }
-            
-            trigger.style.left = `${Math.random() * 42 + 28}%`;
-            trigger.style.top = `${Math.random() * 40 + 30}%`;
+        // Confetti
+        function triggerConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#F6C1D1', '#C9A14A', '#FAF7F2']
+            });
         }
 
-        const lotus = document.getElementById('lotus-easter');
-        const easterTooltip = document.getElementById('easter-tooltip');
+        // Easter Egg 1
+        function showEasterEgg() {
+            document.getElementById('easterEggText').classList.remove('hidden');
+        }
 
-        lotus.addEventListener('click', function() {
-            easterTooltip.classList.remove('hidden');
-            
-            setTimeout(() => {
-                easterTooltip.classList.add('hidden');
-            }, 4800);
-            
-            this.style.filter = 'opacity(0.95)';
-            
-            setTimeout(() => {
-                this.style.filter = 'opacity(0.35)';
-            }, 5200);
-            
-            this.classList.add('animate-[bounce_0.8s_ease]');
-            
-            setTimeout(() => {
-                this.classList.remove('animate-[bounce_0.8s_ease]');
-            }, 820);
+        // Future Button
+        document.getElementById('futureBtn').addEventListener('click', function() {
+            document.getElementById('futureText').classList.remove('hidden');
+            this.textContent = "Patience is key ✨";
+            this.disabled = true;
         });
 
-        const secretInput = document.getElementById('secret-input');
-        const unlockBtn = document.getElementById('secret-unlock-btn');
-        const hiddenMessage = document.getElementById('hidden-message');
+        // Initial fade-in for sections on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
 
-        unlockBtn.addEventListener('click', function() {
-            const enteredSecret = secretInput.value.trim().toLowerCase();
-            
-            if (enteredSecret === secretPasscode) {
-                hiddenMessage.style.display = 'block';
-                
-                secretInput.value = '';
-                
-                unlockBtn.textContent = 'Opened';
-                unlockBtn.style.backgroundColor = 'rgba(201,161,74,0.85)';
-                unlockBtn.style.color = '#fff';
-                
-                setTimeout(() => {
-                    unlockBtn.textContent = 'Reveal';
-                    unlockBtn.style.backgroundColor = 'rgb(246, 193, 209)';
-                    unlockBtn.style.color = '#1C1C1E';
-                }, 2600);
-                
-                hiddenMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-                secretInput.style.animation = 'shake-horizontal 0.52s cubic-bezier(.36,.07,.19,.97) both';
-                
-                setTimeout(() => {
-                    secretInput.style.animation = '';
-                }, 620);
-            }
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
         });
-
-        secretInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                unlockBtn.click();
-            }
-        });
-
-        const nextBtn = document.getElementById('next-chapter');
-        
-        nextBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            this.style.transition = 'all 0.95s cubic-bezier(0.76, 0, 0.24, 1)';
-            this.style.opacity = '0.16';
-            
-            const alertBox = document.createElement('div');
-            alertBox.style.cssText = `
-                position: fixed;
-                bottom: 2rem;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(28,28,30,0.94);
-                color: rgba(255,255,255,0.92);
-                font-size: 0.815rem;
-                padding: 0.65rem 1.45rem;
-                border-radius: 9px;
-                box-shadow: 0 16px 42px -14px rgba(0,0,0,0.42);
-                opacity: 0;
-                transition: opacity 0.45s 0.1s, transform 0.45s 0.1s;
-                will-change: opacity, transform;
-                z-index: 30;
-                font-family: 'Inter', sans-serif;
-                letter-spacing: -0.003em;
-            `;
-            
-            alertBox.textContent = 'अभी नहीं। बाद में 🙂';
-            
-            document.body.appendChild(alertBox);
-            
-            setTimeout(() => {
-                alertBox.style.opacity = '1';
-                alertBox.style.transform = 'translateX(-50%) translateY(-2px)';
-            }, 12);
-            
-            setTimeout(() => {
-                alertBox.style.opacity = '0';
-                alertBox.style.transform = 'translateX(-50%) translateY(4px)';
-                
-                setTimeout(() => {
-                    if (alertBox.parentNode) alertBox.parentNode.removeChild(alertBox);
-                    
-                    nextBtn.style.opacity = '1';
-                }, 480);
-            }, 1950);
-        });
-
-        setTimeout(() => {
-            if (!lockScreen.classList.contains('hidden')) {
-                passcodeInput.focus();
-            }
-        }, 600);
     </script>
 </body>
 </html>
-```
